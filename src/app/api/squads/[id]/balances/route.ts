@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-config';
 
 export async function POST(
   request: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   
@@ -52,13 +52,6 @@ export async function POST(
     squad.expenses.forEach(expense => {
       if (!expense.splits) return;
 
-      // Find payer's own split
-      const payerSplit = expense.splits.find(s => s.userId === expense.paidById);
-      const payerShare = payerSplit ? payerSplit.amount : 0;
-
-      // Calculate how much the payer actually lent (total amount minus their own share)
-      const amountLent = expense.amount - payerShare;
-
       expense.splits.forEach(split => {
         if (split.userId === expense.paidById) return; // Skip payer's own split
 
@@ -79,7 +72,7 @@ export async function POST(
       // Then create new ones
       ...Array.from(balances.entries()).flatMap(([fromUserId, userBalances]) =>
         Array.from(userBalances.entries())
-          .filter(([_, amount]) => amount !== 0)
+          .filter(([, amount]) => amount !== 0)
           .map(([toUserId, amount]) =>
             prisma.balance.create({
               data: {

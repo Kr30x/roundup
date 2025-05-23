@@ -1,11 +1,11 @@
 'use client'
 
-import { useSession, SessionProvider } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { signIn } from 'next-auth/react'
 import { CreateSquadDialog } from '@/components/create-squad-dialog'
 import { JoinSquadDialog } from '@/components/join-squad-dialog'
-import { useEffect, useState, useCallback } from 'react'
-import { Users, DollarSign, Crown, Trash2, UserPlus, Pencil, UserMinus, MoreVertical, Link, Check, HomeIcon, Menu, Badge, ArrowLeftRight, Hammer } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Users, DollarSign, Crown, Trash2, UserPlus, Pencil, UserMinus, Link, Check, HomeIcon, ArrowLeftRight } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -15,11 +15,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { debounce } from 'lodash'
+
 import { ExpenseDialog } from '@/components/expense-dialog'
 import { getSquads, deleteSquad, updateSquadName, removeMemberFromSquad, promoteMemberToAdmin, deleteExpense, settleUp } from '@/lib/firebase-utils'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createRoot } from 'react-dom/client'
+
 import { Logo } from '@/components/logo'
 import { InviteDialog } from '@/components/invite-dialog'
 
@@ -172,13 +172,7 @@ export default function Home() {
     }
   };
 
-  // Make the debounced fetch more responsive for immediate feedback
-  const debouncedFetchSquads = useCallback(
-    debounce(() => {
-      fetchSquads();
-    }, 500), // Reduced from 1000ms to 500ms for better responsiveness
-    []
-  );
+
 
   // Add immediate fetch option
   const refreshData = () => {
@@ -190,7 +184,7 @@ export default function Home() {
     if (session?.user) {
       fetchSquads()
     }
-  }, [session])
+  }, [session]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteSquad = async (squadId: string) => {
     if (!confirm('Are you sure you want to delete this squad?')) return;
@@ -216,7 +210,7 @@ export default function Home() {
     }
   };
 
-  const handlePromoteMember = async (squadId: string, memberEmail: string, memberName: string) => {
+  const handlePromoteMember = async (squadId: string, memberEmail: string) => {
     try {
       await promoteMemberToAdmin(squadId, memberEmail);
       refreshData();
@@ -421,7 +415,7 @@ export default function Home() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() => handlePromoteMember(selectedSquad.id, member.email, member.name)}
+                                onClick={() => handlePromoteMember(selectedSquad.id, member.email)}
                               >
                                 <Crown className="mr-2 h-4 w-4" />
                                 <span>Promote to Admin</span>

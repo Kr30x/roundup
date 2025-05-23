@@ -18,7 +18,8 @@ const serviceAccount = {
 
 const app = apps.length === 0 
   ? initializeApp({
-      credential: cert(serviceAccount),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      credential: cert(serviceAccount as any),
       databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
     }) 
   : apps[0];

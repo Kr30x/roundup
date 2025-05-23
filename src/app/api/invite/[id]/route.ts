@@ -4,7 +4,7 @@ import { getSquad, addMemberToSquad } from '@/lib/firebase-utils'
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
@@ -12,6 +12,8 @@ export async function POST(
     if (!session?.user?.email || !session?.user?.name) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const params = await context.params
 
     // Check if squad exists
     const squad = await getSquad(params.id)

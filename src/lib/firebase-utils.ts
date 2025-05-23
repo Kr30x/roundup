@@ -1,5 +1,7 @@
+
+
+
 import { db, storage } from './firebase';
-import { adminDb } from './firebase-admin';
 import { 
   collection, 
   doc, 
@@ -105,7 +107,7 @@ export async function getSquads(userEmail: string): Promise<Squad[]> {
       console.log('Query returned no results, trying manual filtering');
       const manuallyFilteredDocs = allSquads.docs.filter(doc => {
         const data = doc.data();
-        return data.members?.some((member: any) => member.email === userEmail);
+        return data.members?.some((member: { email: string }) => member.email === userEmail);
       });
 
       console.log('Manually filtered results:', {
@@ -206,14 +208,14 @@ export async function createSquad(name: string, creator: { email: string; name: 
       id: squadRef.id,
       name: savedData?.name,
       members: savedData?.members,
-      memberEmails: savedData?.members?.map(m => m.email)
+      memberEmails: savedData?.members?.map((m: { email: string }) => m.email)
     });
 
     // Return the created squad with proper typing
     const squad: Squad = {
       id: squadRef.id,
       name: squadData.name,
-      members: squadData.members,
+      members: squadData.members as Squad['members'],
       expenses: [],
       balances: [],
       createdAt: new Date(),

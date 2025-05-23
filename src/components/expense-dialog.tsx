@@ -88,7 +88,7 @@ export function ExpenseDialog({
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           console.log('Image URL is valid and accessible');
-          setImageUrl(existingExpense.imageUrl);
+          setImageUrl(existingExpense.imageUrl || '');
           setImageError('');
         })
         .catch(error => {

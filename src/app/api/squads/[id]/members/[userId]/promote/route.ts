@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-config';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string; userId: string } }
+  context: { params: Promise<{ id: string; userId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const params = await context.params;
 
   try {
     // Check if the requester is an admin

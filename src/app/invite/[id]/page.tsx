@@ -5,22 +5,31 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 
-export default function InvitePage({ params }: { params: { id: string } }) {
+export default function InvitePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [squadId, setSquadId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params
+      setSquadId(resolvedParams.id)
+    }
+    getParams()
+  }, [params])
 
   useEffect(() => {
     const joinSquad = async () => {
-      if (!session?.user?.email || !session?.user?.name) {
+      if (!session?.user?.email || !session?.user?.name || !squadId) {
         setLoading(false)
         return
       }
 
       try {
         // Join squad through API
-        const response = await fetch(`/api/invite/${params.id}`, {
+        const response = await fetch(`/api/invite/${squadId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -52,7 +61,7 @@ export default function InvitePage({ params }: { params: { id: string } }) {
     } else if (status === 'unauthenticated') {
       setLoading(false)
     }
-  }, [session, status, params.id, router])
+  }, [session, status, squadId, router])
 
   if (status === 'loading' || loading) {
     return (
