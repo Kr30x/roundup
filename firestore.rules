@@ -1,0 +1,50 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isSquadMember(squadId) {
+      let squad = get(/databases/$(database)/documents/squads/$(squadId));
+      return squad != null && 
+             squad.data.members.hasAny([{
+               email: request.auth.token.email,
+               name: request.auth.token.name,
+               image: request.auth.token.picture
+             }]);
+    }
+    
+    function isSquadAdmin(squadId) {
+      let squad = get(/databases/$(database)/documents/squads/$(squadId));
+      return squad != null && 
+             squad.data.members.hasAny([{
+               email: request.auth.token.email,
+               name: request.auth.token.name,
+               image: request.auth.token.picture,
+               role: 'ADMIN'
+             }]);
+    }
+
+    // Squad rules
+    match /squads/{squadId} {
+      allow read: if isSignedIn() && isSquadMember(squadId);
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && isSquadAdmin(squadId);
+      allow delete: if isSignedIn() && isSquadAdmin(squadId);
+      
+      // Nested expenses in squad
+      match /expenses/{expenseId} {
+        allow read: if isSignedIn() && isSquadMember(squadId);
+        allow write: if isSignedIn() && isSquadMember(squadId);
+      }
+    }
+
+    // Test collection (for connection testing)
+    match /_test/{document=**} {
+      allow read, write: if true;
+    }
+  }
+} 

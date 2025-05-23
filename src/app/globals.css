@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
+
+@layer base {
+:root {
+    --background: 40 38% 97%;     /* Cream background */
+    --foreground: 22 32% 22%;     /* Dark brown text */
+    --card: 40 38% 97%;
+    --card-foreground: 22 32% 22%;
+    --popover: 40 38% 97%;
+    --popover-foreground: 22 32% 22%;
+    --primary: 35 85% 55%;        /* Sheriff badge gold */
+    --primary-foreground: 22 32% 22%;
+    --secondary: 30 15% 90%;      /* Light tan */
+    --secondary-foreground: 22 32% 22%;
+    --muted: 30 15% 90%;
+    --muted-foreground: 22 32% 45%;
+    --accent: 35 85% 55%;         /* Sheriff badge gold */
+    --accent-foreground: 22 32% 22%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 22 32% 85%;         /* Light brown border */
+    --input: 22 32% 85%;
+    --ring: 35 85% 55%;          /* Sheriff badge gold */
+    --radius: 0.75rem;           /* Slightly rounder corners */
+  }
+
+  .dark {
+    --background: 22 32% 15%;     /* Dark brown background */
+    --foreground: 40 38% 97%;     /* Cream text */
+    --card: 22 32% 15%;
+    --card-foreground: 40 38% 97%;
+    --popover: 22 32% 15%;
+    --popover-foreground: 40 38% 97%;
+    --primary: 35 85% 55%;        /* Sheriff badge gold */
+    --primary-foreground: 22 32% 15%;
+    --secondary: 22 32% 25%;      /* Slightly lighter brown */
+    --secondary-foreground: 40 38% 97%;
+    --muted: 22 32% 25%;
+    --muted-foreground: 40 38% 80%;
+    --accent: 35 85% 55%;         /* Sheriff badge gold */
+    --accent-foreground: 22 32% 15%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 22 32% 35%;         /* Dark brown border */
+    --input: 22 32% 35%;
+    --ring: 35 85% 55%;          /* Sheriff badge gold */
+  }
+
+  * {
+    @apply border-border;
+}
+
+body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Western-style font for headings */
+h1, h2, h3, h4, h5, h6, .font-western {
+  font-family: "Rye", Georgia, serif;
+  letter-spacing: 0.02em;
+}
