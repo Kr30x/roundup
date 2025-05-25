@@ -20,14 +20,9 @@ export function Logo({ className = '', showText = true }: LogoProps) {
       </div>
       {showText && (
         <div className="flex flex-col">
-          <span className="text-3xl tracking-wide text-foreground font-western">
-            ROUNDUP
+          <span className="text-lg tracking-wider text-foreground">
+            Split Bills With Friends
           </span>
-          {showText === true && (
-            <span className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
-              Split Bills With Friends
-            </span>
-          )}
         </div>
       )}
     </Link>

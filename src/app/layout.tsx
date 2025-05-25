@@ -15,6 +15,13 @@ const stagewiseConfig = {
 export const metadata: Metadata = {
   title: "Roundup - Split Bills with Friends",
   description: "A simple way to split bills and track expenses with friends",
+  icons: {
+    icon: [
+      { url: '/images/logo-remove-background.png', type: 'image/png' },
+      { url: '/favicon.ico' }
+    ],
+    apple: { url: '/images/logo-remove-background.png', type: 'image/png' }
+  }
 };
 
 export default function RootLayout({

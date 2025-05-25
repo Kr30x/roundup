@@ -11,6 +11,12 @@ export async function GET() {
       return NextResponse.json({ squads: [] }, { status: 401 })
     }
 
+    // Check if adminDb is properly initialized
+    if (!adminDb || typeof adminDb.collection !== 'function') {
+      console.error('Firebase Admin not properly initialized')
+      return NextResponse.json({ squads: [] }, { status: 500 })
+    }
+
     // Get squads where user is a member
     const squadsSnapshot = await adminDb.collection('squads')
       .where('members', 'array-contains', { 
@@ -49,6 +55,7 @@ export async function POST(request: Request) {
     // Create new squad
     const newSquad = await adminDb.collection('squads').add({
       name,
+      currency: 'USD', // Default to USD if not specified
       members: [{
         email: session.user.email,
         name: session.user.name,
@@ -64,6 +71,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       id: newSquad.id,
       name,
+      currency: 'USD',
       members: [{
         email: session.user.email,
         name: session.user.name,

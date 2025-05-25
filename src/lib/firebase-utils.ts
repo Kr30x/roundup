@@ -1,6 +1,3 @@
-
-
-
 import { db, storage } from './firebase';
 import { 
   collection, 
@@ -22,6 +19,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 export interface Squad {
   id: string;
   name: string;
+  currency: string;
   members: {
     email: string;
     name: string;
@@ -40,6 +38,17 @@ export interface Squad {
     splits: {
       userId: string;
       amount: number;
+    }[];
+    isRestaurantMode?: boolean;
+    items?: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+      assignments: {
+        userId: string;
+        quantity: number;
+      }[];
     }[];
   }[];
   balances: {
@@ -123,6 +132,7 @@ export async function getSquads(userEmail: string): Promise<Squad[]> {
         return {
           id: doc.id,
           name: data.name || '',
+          currency: data.currency || 'USD',
           members: Array.isArray(data.members) ? data.members.map(member => ({
             email: member.email || '',
             name: member.name || '',
@@ -142,6 +152,7 @@ export async function getSquads(userEmail: string): Promise<Squad[]> {
       return {
         id: doc.id,
         name: data.name || '',
+        currency: data.currency || 'USD',
         members: Array.isArray(data.members) ? data.members.map(member => ({
           email: member.email || '',
           name: member.name || '',
@@ -188,6 +199,7 @@ export async function createSquad(name: string, creator: { email: string; name: 
   // Create the squad data with the exact structure
   const squadData = {
     name,
+    currency: 'USD', // Default currency
     members: [member],
     expenses: [],
     balances: [],
@@ -207,6 +219,7 @@ export async function createSquad(name: string, creator: { email: string; name: 
     console.log('Saved document data:', {
       id: squadRef.id,
       name: savedData?.name,
+      currency: savedData?.currency,
       members: savedData?.members,
       memberEmails: savedData?.members?.map((m: { email: string }) => m.email)
     });
@@ -215,6 +228,7 @@ export async function createSquad(name: string, creator: { email: string; name: 
     const squad: Squad = {
       id: squadRef.id,
       name: squadData.name,
+      currency: squadData.currency,
       members: squadData.members as Squad['members'],
       expenses: [],
       balances: [],
@@ -233,6 +247,14 @@ export async function updateSquadName(squadId: string, name: string): Promise<vo
   const squadRef = doc(db, 'squads', squadId);
   await updateDoc(squadRef, {
     name,
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function updateSquadCurrency(squadId: string, currency: string): Promise<void> {
+  const squadRef = doc(db, 'squads', squadId);
+  await updateDoc(squadRef, {
+    currency,
     updatedAt: serverTimestamp()
   });
 }
@@ -391,6 +413,17 @@ export async function addExpense(squadId: string, expense: {
     amount: number
   }[]
   imageUrl?: string
+  isRestaurantMode?: boolean
+  items?: {
+    id: string
+    name: string
+    price: number
+    quantity: number
+    assignments: {
+      userId: string
+      quantity: number
+    }[]
+  }[]
 }): Promise<void> {
   const squadRef = doc(db, 'squads', squadId);
   
@@ -408,6 +441,8 @@ export async function addExpense(squadId: string, expense: {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
+    console.log('Adding new expense:', newExpense);
 
     const updatedExpenses = [...expenses, newExpense];
     const updatedBalances = calculateBalancesFromExpenses(updatedExpenses);
@@ -440,6 +475,17 @@ export async function updateExpense(
       amount: number
     }[]
     imageUrl?: string
+    isRestaurantMode?: boolean
+    items?: {
+      id: string
+      name: string
+      price: number
+      quantity: number
+      assignments: {
+        userId: string
+        quantity: number
+      }[]
+    }[]
   }
 ): Promise<void> {
   console.log('Updating expense:', {

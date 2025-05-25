@@ -10,7 +10,7 @@ export default function SignIn() {
       <div className="mx-auto flex w-full flex-col justify-center items-center space-y-6 sm:w-[350px]">
         <Logo className="mb-4" showText={false} />
         <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight font-georgia">
+          <h1 className="text-2xl font-medium tracking-tight">
             Welcome to Roundup
           </h1>
           <p className="text-sm text-muted-foreground">
